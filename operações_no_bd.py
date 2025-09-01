@@ -104,3 +104,5 @@ def bar_valores():
 
     for i in receitas:
         receitas_lista.append(i[3])
+
+        

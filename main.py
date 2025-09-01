@@ -154,7 +154,7 @@ def inserir_despesa_b():
 
 #chamando a função inserir_despesa presente em operações_no_bd.py
     inserir_despesa(lista_inserir)
-    messagebox.showinfo('Sucesso', 'Receita inserida com sucesso')
+    messagebox.showinfo('Sucesso', 'Despesa inserida com sucesso')
     entrada_calendario_despesa.delete(0, 'end')
     entrada_valores_despesa.delete(0, 'end')
     combo_categoria.delete(0, 'end')
@@ -204,14 +204,6 @@ def excluir_despesa_b():
          
     except IndexError:
         messagebox.showerror('Erro', 'Selecione um item na tabela')
-
-
-
-
-    
-
-
-
 
 
 

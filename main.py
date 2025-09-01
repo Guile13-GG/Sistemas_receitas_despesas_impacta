@@ -21,7 +21,7 @@ from tkcalendar import Calendar, DateEntry
 from datetime import date
 
 # importando funções da (operações_no_bd.py)
-from operações_no_bd import bar_valores, inserir_categoria,visualizar_categorias, inserir_despesa, inserir_receita, tabela_dados, visualizar_despesa, visualizar_receitas, excluir_despesa, excluir_receita
+from operações_no_bd import bar_valores, pie_valores, porcentagem_valor, inserir_categoria,visualizar_categorias, inserir_despesa, inserir_receita, tabela_dados, visualizar_despesa, visualizar_receitas, excluir_despesa, excluir_receita
 
 #cores
 co0 = "#2e2d2b"  # Preta
@@ -131,11 +131,11 @@ def inserir_receita_b():
     combo_categoria.delete(0, 'end')
 
 #atualizando dados da tabela e gráficos
+    porcentagem()
     mostrar_tabela()
     grafico_bars()
     grafico_pizza()
     bar_valores()
-    porcentagem()
     resumo_total()
 
 #função inserir despesas---------------------------------------
@@ -162,11 +162,11 @@ def inserir_despesa_b():
 
 
 #atualizando dados da tabela e gráficos
-    mostrar_tabela()
-    grafico_bars()
-    grafico_pizza()
     porcentagem()
+    grafico_bars()
     resumo_total()
+    grafico_pizza()
+    mostrar_tabela()
     bar_valores()
 
 #função excluir despesas---------------------------------------
@@ -183,24 +183,28 @@ def excluir_despesa_b():
             messagebox.showinfo('Sucesso', 'Receita excluída com sucesso')
 
             #atualizando dados da tabela e gráficos
-            mostrar_tabela()
-            grafico_bars()
-            grafico_pizza()
+            
             porcentagem()
+            grafico_bars()
             resumo_total()
-            bar_valores()  
+            grafico_pizza()
+            mostrar_tabela()
+            bar_valores() 
 
 
         else: 
             excluir_despesa([valor])
             messagebox.showinfo('Sucesso', 'Despesa excluída com sucesso')
 
-            #atualizando dados da tabela e gráficos
-            mostrar_tabela()
-            grafico_bars()
-            grafico_pizza()
+            #atualizando dados da tabela e gráficos  
+
             porcentagem()
-            resumo_total()   
+            grafico_bars()
+            resumo_total()
+            grafico_pizza()
+            mostrar_tabela()
+            bar_valores()
+
          
     except IndexError:
         messagebox.showerror('Erro', 'Selecione um item na tabela')
@@ -212,7 +216,7 @@ def excluir_despesa_b():
 
 #criando a barra de porcentagem progressiva 
 def porcentagem():
-    l_nome = Label(frame_meio, text='Porcentagem de Gastos', height=1, anchor=NW, font=('poppins 15 bold'), bg=co1, fg=co0)
+    l_nome = Label(frame_meio, text='Porcentagem de Receita restante', height=1, anchor=NW, font=('poppins 10 bold'), bg=co1, fg=co0)
     l_nome.place(x=10, y=10)
 
 #estilizando a barra de progresso
@@ -223,17 +227,18 @@ style.configure('TProgressbar', thickness=25)
 
 bar = Progressbar(frame_meio, length=180, style="black.Horizontal.TProgressbar")
 bar.place(x=10, y=35)
-bar['value'] = 50  # Definindo o valor da barra de progresso
+bar['value'] = porcentagem_valor()[0]  # Definindo o valor da barra de progresso
 
 #contagem de progresso da barra de porcentagem
-valor = 50
+valor = porcentagem_valor()[0]
 l_porcentagem = Label(frame_meio, text=f'{valor:,.2f}%', anchor=NW, font=('poppins 15 bold'), bg=co1, fg=co0)
 l_porcentagem.place(x=200, y=35)
 
 #função para gráfico bars
 def grafico_bars():
     lista_categorias = ['renda', 'despesas', 'saldo']
-    lista_valores = [5000, 3000, 2000]
+    lista_valores = bar_valores()
+    
     #criando o gráfico
     figura = plt.Figure(figsize=(4,3.45), dpi=60)
     ax = figura.add_subplot(111)
@@ -275,7 +280,7 @@ def grafico_bars():
 
     #função de resulmo total
 def resumo_total():
-    valor = [500, 300, 200]
+    valor = bar_valores()
 
 #total de renda
     l_linha = Label(frame_meio, text='', width=215, height=1, anchor=NW, font=('Arial 1'), bg='#545454',)
@@ -307,8 +312,8 @@ def grafico_pizza():
     figura = plt.figure(figsize=(5, 3), dpi=90)
     ax = figura.add_subplot(111)
     #dados
-    lista_categorias = ['renda', 'despesas', 'saldo']
-    lista_valores = [500, 300, 200]
+    lista_categorias = pie_valores()[0]
+    lista_valores = pie_valores()[1]
 
     #criando o gráfico (apenas expande a 2° fatia)
 
@@ -327,6 +332,7 @@ porcentagem()
 grafico_bars()
 resumo_total()
 grafico_pizza()
+bar_valores()
 
 #criando frame no frame de baixo (rodapé)
 frame_renda = Frame(frame_baixo, width=350, height=220, bg=co1, )
@@ -467,6 +473,12 @@ img_add_nova_categoria = ImageTk.PhotoImage(img_add_nova_categoria)
 botao_inserir_nova_categoria = Button(frame_configuracao, command=inserir_categoria_b, image=img_add_nova_categoria, text=' Adicionar'.upper(), width=80, compound=LEFT, anchor=NW , overrelief=RIDGE, font=('Ivy 7 bold'), bg=co1, fg=co0)
 botao_inserir_nova_categoria.place(x=110, y=191)
 
+
+porcentagem()
+grafico_bars()
+resumo_total()
+grafico_pizza()
+bar_valores()
 mostrar_tabela()
 janela.mainloop()
 

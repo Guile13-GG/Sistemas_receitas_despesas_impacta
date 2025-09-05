@@ -1,20 +1,50 @@
-#importando SQLlite3
-import sqlite3 as sqllite3
+#importando MySQL Connector
+import mysql.connector
 
-#Criando a conexão com o banco de dados
-con = sqllite3.connect('banco.db')
+def conectar():
+    return mysql.connector.connect(
+        host="localhost",
+        user="root",          # coloque aqui seu usuário do MySQL
+        password="senha_senha"  # coloque aqui a senha do MySQL
+    )
 
-#Criando o tabela de categorias
-with con:
-    cur = con.cursor()
-    cur.execute("CREATE TABLE Categorias (id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT)")
+# Conecta ao servidor MySQL
+con = conectar()
+cur = con.cursor()
 
-#Criando o tabela de receitas
-with con:
-    cur = con.cursor()
-    cur.execute("CREATE TABLE Receitas (id INTEGER PRIMARY KEY AUTOINCREMENT, categoria TEXT, adicionada_em DATE, valor DECIMAL)")
+# 1. Cria o banco de dados se não existir
+cur.execute("CREATE DATABASE IF NOT EXISTS sistema_financeiro")
+cur.execute("USE sistema_financeiro")
 
-    #Criando o tabela de gastos
-with con:
-    cur = con.cursor()
-    cur.execute("CREATE TABLE Gastos (id INTEGER PRIMARY KEY AUTOINCREMENT, categoria TEXT, retirado_em DATE, valor DECIMAL)")
+# 2. Cria as tabelas
+cur.execute("""
+CREATE TABLE IF NOT EXISTS Categorias (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL
+)
+""")
+
+cur.execute("""
+CREATE TABLE IF NOT EXISTS Receitas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    categoria_id INT,
+    valor DECIMAL(10,2) NOT NULL,
+    data DATE,
+    FOREIGN KEY (categoria_id) REFERENCES Categorias(id)
+)
+""")
+
+cur.execute("""
+CREATE TABLE IF NOT EXISTS Gastos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    categoria_id INT,
+    valor DECIMAL(10,2) NOT NULL,
+    data DATE,
+    FOREIGN KEY (categoria_id) REFERENCES Categorias(id)
+)
+""")
+
+con.commit()
+con.close()
+
+print("Banco e tabelas criados com sucesso! 🚀")
